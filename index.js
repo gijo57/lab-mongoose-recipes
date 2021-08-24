@@ -14,14 +14,36 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true
   })
-  .then(self => {
+  .then((self) => {
     console.log(`Connected to the database: "${self.connection.name}"`);
     // Before adding any recipes to the database, let's remove all existing ones
-    return Recipe.deleteMany()
+    return Recipe.deleteMany();
   })
   .then(() => {
-    // Run your code here, after you have insured that the connection was made
+    return Recipe.create(data[0]);
   })
-  .catch(error => {
+  .then((recipe) => {
+    console.log(recipe.title);
+    return Recipe.insertMany(data);
+  })
+  .then((recipes) => {
+    recipes.forEach((recipe) => console.log(recipe.title));
+    return Recipe.findOneAndUpdate(
+      { title: 'Rigatoni alla Genovese' },
+      { duration: 100 }
+    );
+  })
+  .then(() => {
+    console.log('Update successful');
+    return Recipe.deleteOne({ title: 'Carrot Cake' });
+  })
+  .then(() => {
+    console.log('Deletion successful');
+    return mongoose.disconnect();
+  })
+  .then(() => {
+    console.log('Disconnected');
+  })
+  .catch((error) => {
     console.error('Error connecting to the database', error);
   });
